@@ -1,7 +1,7 @@
 use std::{env, fs, path::Path, process::Command, fs::OpenOptions, io::Write};
 use core_affinity;
 use getopts::Options;
-use core_affinity::set_for_current;
+use core_affinity::{get_core_ids, set_for_current};
 
 #[derive(Debug)]
 struct Settings 
@@ -38,7 +38,7 @@ fn starten(einstellungen: &Settings) -> Vec<f64>
     // 3. Nur die Shell-Zeile ausgeben
     if einstellungen.flagge 
     {
-        println!("\nBenchmarking ausgeführt mit: ./{} {}\n", einstellungen.programm, args.join(" "));
+        println!("Benchmarking ausgeführt mit: ./{} {}\n", einstellungen.programm, args.join(" "));
     }
 
     // Benchmarking ausführen
@@ -155,10 +155,10 @@ fn pinnen(einstellungen: &Settings, prozessor: &ProzessorSpecs)
     }
 
     // pinnen
-    let liste = core_affinity::get_core_ids().unwrap();
+    let liste = get_core_ids().unwrap();
     let id = liste.get(frei as usize).unwrap_or_else(|| 
         fehlerausgabe("Kann Programm nicht auf Kern pinnen"));
-    core_affinity::set_for_current(*id);
+    set_for_current(*id);
 
     if einstellungen.flagge
     {
@@ -210,7 +210,7 @@ impl Settings
         let test_args: Vec<String> = vec![
             "-a".into(), "kette.txt".into(),        
             "-b".into(), "12-18".into(),         
-            "-c".into(), "[1,2,3]".into(),
+            "-c".into(), "[4,5,6]".into(),
             "-d".into(), "4".into(),   
             "-e".into(), "log".into(),
             "-f".into(),
